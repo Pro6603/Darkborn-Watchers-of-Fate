@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using game.Weapon;
+using util.RenderHelper;
 
 namespace game.Player
 {
@@ -12,10 +13,29 @@ namespace game.Player
 
     public class Player(string name)
     {
-        private Random random = new Random();
-        public int HP { get; set; } = 100;
+        private RenderHelper helper = new RenderHelper();
+        private int _hp = 100;
+
+        public int HP
+        {
+            get => _hp;
+            set
+            {
+                if (_hp != value)
+                {
+                    _hp = value;
+                    OnHPChanged();
+                }
+            }
+        }
+
         public string Name { get; } = name;
 
         public int AGE { get; set; } = randomutil.random.Next(46);
+
+        private void OnHPChanged()
+        {
+            helper.RenderHP(this);
+        }
     }
 }

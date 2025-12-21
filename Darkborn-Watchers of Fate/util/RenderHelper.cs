@@ -8,6 +8,7 @@ using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using game.Player;
 using game.Weapon;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -62,6 +63,37 @@ namespace util.RenderHelper
             }
         }
 
+        public void RenderHP(Player player)
+        {
+            int barWidth = Console.WindowWidth / 4;
+            int x = 0;
+            int y = Console.WindowHeight - 2;
+
+            Console.SetCursorPosition(x + 2, y - 1);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($"HP ({player.HP}%):");
+
+            Console.SetCursorPosition(x + 2, y);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+
+            int filled = (int)(barWidth * (player.HP / 100.0));
+
+            for (int i = 0; i < filled; i++)
+                Console.Write("█");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            for (int i = filled; i < barWidth; i++)
+                Console.Write("░");
+
+            Console.ResetColor();
+        }
+
+
+
+
+
         /// <summary>
         /// Renders a string in the middle of the screen, fitted to the strings lenght.
         /// </summary>
@@ -86,6 +118,7 @@ namespace util.RenderHelper
             {
                 Console.Write(text);
             }
+
         }
 
         /// <summary>
@@ -165,7 +198,7 @@ namespace util.RenderHelper
             }
             else if (isInfo == false && isNormal == true && isHint == false)
             {
-                string final_text = $@"-> {text} <-";
+                string final_text = $@"{text}";
                 Console.SetCursorPosition(GetHalfWidht(final_text, true), windowHeightToRender);
                 Console.WriteLine(final_text);
                 Thread.Sleep(duration);
@@ -373,6 +406,15 @@ namespace util.RenderHelper
             }
         }
 
+        void SlowWrite(string text, int delay)
+        {
+            foreach (char c in text)
+            {
+                Console.Write(c);
+                Thread.Sleep(delay);
+            }
+        }
+
         /// <summary>
         /// Returns the top left corner, of where to render a dialogue textbox.
         /// </summary>
@@ -390,7 +432,7 @@ namespace util.RenderHelper
             return ((int)DwindowWidht, (int)DwindowHeight);
         }
 
-        public void RenderLoadingScreen(int duration)
+        public void RenderLoadingScreen(int duration, int centerTopOffset)
         {
             Console.Clear();
             string loadingScreen = @$"
@@ -420,7 +462,7 @@ namespace util.RenderHelper
 
             for (int i = 0; i < lines.Length; i++)
             {
-                Console.SetCursorPosition(startX, startY + i);
+                Console.SetCursorPosition(startX, startY + i + centerTopOffset);
                 Console.WriteLine(lines[i]);
             }
         }

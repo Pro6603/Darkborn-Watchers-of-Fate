@@ -6,12 +6,13 @@ namespace AppInitializer
 {
     public class App
     {
-        public string Title { get; set; } = "Darkborn: Watchers of Fate";
+        public string Title { get; set; } = "Darkborn: Watchers of Fate ";
+        private string AppVersion { get; } = "v0.0.1";
 
-        public void setTitle(string title)
+        public string setTitle()
         {
-            Title = title;
-            Console.Title = title;
+            string title = Title + AppVersion;
+            return title;
         }
     }
 }

@@ -10,33 +10,37 @@ using util.RenderHelper;
 using game.Weapon;
 using game.Player;
 using System.Diagnostics;
+using System.Random;
 
 // inherit objects
 
-Console.SetWindowSize(251, 50);
+// Init primary app class, used for high-overview tasks, such as setting the apps title
+App app = new App();
+Console.Title = app.setTitle();
+
+Console.SetWindowSize(200, 50);
 
 RenderHelper renderHelper = new RenderHelper();
 List<Weapon> OwnedWeapons = new List<Weapon>();
 
 
-renderHelper.RenderCenteredText("Enter your Name: ", 1, false);
+renderHelper.RenderCenteredText("Enter your name: ", 1, false);
 
 string playername = "";
 while (playername == "" || playername.Length == 0)
 {
     playername = Console.ReadLine();
 }
+
 Player player = new Player(playername);
-renderHelper.RenderHeaderText($"Welcome, {player.Name}!", false, true, false, -10, 1500, true);
+renderHelper.RenderHeaderText($"Welcome, {player.Name}!", false, false, true, -1, 1500, true);
 
-Weapon StoneSword = new Weapon(Weapon.Rarity.LEGENDARY, "Stone Sword", "A basic stone sword.", 2, 30, 5);
+Console.Clear();
 
-renderHelper.RenderLoadingScreen(2000);
+Weapon StoneSword = new Weapon(Weapon.Rarity.COMMON, "Stone Sword", "A basic stone sword.", 2, 30, 5);
 
+renderHelper.RenderLoadingScreen(2000, -5);
+renderHelper.RenderCenteredText("Press any key to continue..", -4, false);
 
-App app = new App();
-
-Console.Title = app.Title;
-
-// nope, no exit!
 Console.ReadKey();
+Console.Clear();
