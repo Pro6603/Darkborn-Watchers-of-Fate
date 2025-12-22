@@ -4,38 +4,56 @@ using System.Text;
 using game.Weapon;
 using util.RenderHelper;
 
-namespace game.Player
+
+internal class randomutil
 {
-    internal class randomutil
-    {
-        public static Random random = new Random();
-    }
+    public static Random random = new Random();
+}
 
-    public class Player(string name)
-    {
-        private RenderHelper helper = new RenderHelper();
-        private int _hp = 100;
+public class Player(string name)
+{
+    private RenderHelper helper = new RenderHelper();
 
-        public int HP
+    private int _hp = 100;
+    public int _stamina = 25;
+
+    public int STAMINA
+    {
+        get => _stamina;
+        set
         {
-            get => _hp;
-            set
+            if (_stamina != value)
             {
-                if (_hp != value)
-                {
-                    _hp = value;
-                    OnHPChanged();
-                }
+                _stamina = value;
+                OnStaminaChanged();
             }
         }
+    }
 
-        public string Name { get; } = name;
-
-        public int AGE { get; set; } = randomutil.random.Next(46);
-
-        private void OnHPChanged()
+    public int HP
+    {
+        get => _hp;
+        set
         {
-            helper.RenderHP(this);
+            if (_hp != value)
+            {
+                _hp = value;
+                OnHPChanged();
+            }
         }
+    }
+
+    public string Name { get; } = name;
+
+    public int AGE { get; set; } = randomutil.random.Next(46);
+
+    private void OnStaminaChanged()
+    {
+        helper.RenderStamina(this);
+    }
+
+    private void OnHPChanged()
+    {
+        helper.RenderHP(this);
     }
 }

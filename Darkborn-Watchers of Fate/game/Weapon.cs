@@ -7,6 +7,8 @@ namespace game.Weapon
 {
     public class Weapon
     {
+
+
         public enum Rarity
         {
             COMMON,
@@ -23,14 +25,17 @@ namespace game.Weapon
         public int? ID { get; }
         public int Damage { get; }
         public int? Cooldown { get; }
+        public int Durability { get; set; }
+        public int MaxDurability { get; set; }
 
-        public Weapon(Rarity _rarity, string name, string description, int? id, int damage, int? cooldown) 
+        public Weapon(Rarity _rarity, string name, string description, int? id, int durability, int damage, int maxDurability) 
         {
             Description = description;
             Name = name;
             ID = id;
             Damage = damage;
-            Cooldown = cooldown;
+            Durability = durability;
+            MaxDurability = maxDurability;
             rarity = _rarity;
         }
 
@@ -50,6 +55,11 @@ namespace game.Weapon
         public Rarity getRarity(Weapon weapon)
         {
             return weapon.rarity;
+        }
+
+        public int getEquippedWeapon(Inventory inventory)
+        {
+            return inventory.CurrentWeapon;
         }
     }
 }
