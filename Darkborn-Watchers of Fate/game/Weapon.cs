@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using util.RenderHelper;
 
 namespace game.Weapon
 {
     public class Weapon
     {
+        private readonly RenderHelper renderHelper = new RenderHelper();
         public enum Rarity
         {
             COMMON,
@@ -27,7 +29,21 @@ namespace game.Weapon
         public int MaxDurability { get; set; }
         public bool IsOwned { get; set; }
 
-        public bool IsEquipped { get; set; }
+        private bool _isEquipped;
+        public bool IsEquipped
+        {
+            get => _isEquipped;
+            set
+            {
+                // only react when switching false → true
+                if (!_isEquipped && value)
+                {
+                    renderHelper.RenderWeaponContext(this);
+                }
+
+                _isEquipped = value;
+            }
+        }
 
         public Weapon(Rarity _rarity, string name, string description, int? id, int durability, int damage, int maxDurability, bool isEquipped, bool isOwned) 
         {

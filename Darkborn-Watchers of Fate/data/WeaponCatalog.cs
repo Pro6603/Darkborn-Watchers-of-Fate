@@ -108,7 +108,7 @@ public class WeaponCatalog
         Ruin = Register(new Weapon(Weapon.Rarity.MYTHIC, "Ruin", "Bringer of destruction.", 37, 320, 55, 320, false, false));
         Abyss = Register(new Weapon(Weapon.Rarity.MYTHIC, "Abyss", "Endless darkness.", 38, 330, 58, 330, false, false));
         Null = Register(new Weapon(Weapon.Rarity.MYTHIC, "Null", "Nothingness itself.", 39, 340, 60, 340, false, false));
-        End = Register(new Weapon(Weapon.Rarity.MYTHIC, "End", "The final weapon.", 40, 350, 65, 350, false, false));
+        End = Register(new Weapon(Weapon.Rarity.MYTHIC, "End", "? The End ?", 40, 350, 65, 350, false, false));
 
     }
 

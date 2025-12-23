@@ -18,7 +18,7 @@ Console.Title = app.setTitle();
 Console.SetWindowSize(200, 50);
 
 ItemCatalog itemcatalog = new ItemCatalog();
-WeaponCatalog swordcatalog = new WeaponCatalog();
+WeaponCatalog weaponcatalog = new WeaponCatalog();
 SpellCatalog spellcatalog = new SpellCatalog();
 
 RenderHelper renderHelper = new RenderHelper();
@@ -38,8 +38,6 @@ renderHelper.RenderHeaderText($"Welcome, {player.Name}!", false, false, true, -1
 
 Console.Clear();
 
-Weapon StoneSword = new Weapon(Weapon.Rarity.COMMON, "Stone Sword", "A basic stone sword.", 2, 0, 5, 50);
-
 renderHelper.RenderLoadingScreen(2000, -5);
 renderHelper.RenderCenteredText("Press any key to continue..", -4, false);
 
@@ -55,24 +53,32 @@ renderHelper.RenderHP(player);
 // items needed to craft an DullKnife
 inventory.AddItem(itemcatalog.ShortStick, 2);
 inventory.AddItem(itemcatalog.IronOre, 4);
-
-inventory.AddW
+inventory.AddItem(itemcatalog.MetalScrap, 4);
+inventory.AddItem(itemcatalog.Bone, 4);
+inventory.AddItem(itemcatalog.CrystalCore, 5);
+inventory.AddItem(itemcatalog.Glue, 6);
+inventory.AddItem(itemcatalog.ShortStick, 56);
 //
 
-renderHelper.RenderDialogueTB("saint", "here ya go, take the sword. youll need it.", "[TAKE]", "", "", 1, true);
+renderHelper.RenderInventory(inventory);
 
-renderHelper.RenderWeaponContext(StoneSword);
-renderHelper.RenderNewWeaponText(StoneSword);
+string takeWeapon = renderHelper.RenderDialogueTB("saint", "here ya go, take the sword. youll need it.", "[TAKE]", "", "", true, inventory);
+if (takeWeapon == "1")
+{
+    inventory.AddWeapon(weaponcatalog.DullKnife, true);
+    inventory.EquipWeapon(weaponcatalog.DullKnife);
+    renderHelper.RenderWeaponContext(inventory.EquippedWeapon);
+}
 
-renderHelper.RenderDialogueTB("saint", "wanna practice with it a little?", "Yea, sure!", "nah..", "", 1, true);
+renderHelper.RenderDialogueTB("saint", "wanna practice with it a little?", "Yea, sure!", "nah..", "", true, inventory);
 Console.Clear();
 renderHelper.RenderCenteredText("Some time later..", 0, false);
 Thread.Sleep(2500);
 Console.Clear();
 player.HP = (int)randomutil.random.NextInt64(3, 8);
 player.STAMINA = (int)randomutil.random.NextInt64(16, 24);
-renderHelper.RenderDialogueTB("you", "... this weakend me quite alot, do you have a healing potion?", "", "", "", 1, true);
-renderHelper.RenderDialogueTB("saint", "here ya go mate, hope this helps you:", "Take Potion", "", "", 1, true);
+renderHelper.RenderDialogueTB("you", "... this weakend me quite alot, do you have a healing potion?", "", "", "", true, inventory);
+renderHelper.RenderDialogueTB("saint", "here ya go mate, hope this helps you:", "Take Potion", "", "", true, inventory);
 player.HP = 100;
 player.STAMINA = 100;
 

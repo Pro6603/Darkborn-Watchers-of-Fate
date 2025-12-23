@@ -67,7 +67,7 @@ public class Inventory
                 weapon.Damage,
                 weapon.MaxDurability,
                 weapon.IsEquipped,
-                weapon.IsOwned
+                setOwned
             ));
         }
     }
@@ -96,4 +96,17 @@ public class Inventory
         OwnedWeapons.Remove(existing);
     }
 
+    public bool EquipWeapon(Weapon weapon)
+    {
+        var existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
+        if (existing == null || !existing.IsOwned)
+            return false;
+
+        foreach (var w in OwnedWeapons)
+            w.IsEquipped = false;
+
+        existing.IsEquipped = true;
+        EquippedWeapon = existing;
+        return true;
+    }
 }

@@ -5,10 +5,12 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipes;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json.Serialization.Metadata;
 using game.Weapon;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -16,26 +18,77 @@ namespace util.RenderHelper
 {
     internal class RenderHelper
     {
+        private bool isInventoryShown;
+
+        public void ToggleInventoryShown(Inventory inventory)
+        {
+            const int startX = 0;
+            const int startY = 0;
+            const int width = 55;
+            const int height = 40;
+
+            if (isInventoryShown)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    Console.SetCursorPosition(startX, startY + y);
+                    Console.Write(new string(' ', width));
+                }
+
+                isInventoryShown = false;
+            }
+            else
+            {
+                RenderInventory(inventory);
+
+            }
+        }
+
+
         public void RenderInventory(Inventory inventory)
         {
-            List<String> inventoryContentsItem = new List<String>();
-            foreach (Item item in inventory.OwnedItems)
-            {
-                item.Name.ToString();
-                inventoryContentsItem.Add(item.Name);
-                Console.WriteLine(item.Amount.ToString() + "x " + item.Name);
-            }
+            isInventoryShown = true;
 
-            List<String> inventoryContentsWeapon = new List<String>();
-            foreach (var weapon in inventory.OwnedWeapons)
-            {
-                inventoryContentsWeapon.Add(weapon.Name);
-            }
+            int top = 1;
+            int left = 2;
 
-            inventoryContentsItem.ForEach(item =>
+            Console.SetCursorPosition(left, top);
+            Console.Write("<-- All Items -->");
+            top += 2;
+
+            foreach (var item in inventory.OwnedItems)
             {
-                Console.Write(item);
-            });
+                if (item.Amount > 0 && item.Amount < 10)
+                {
+                    Console.SetCursorPosition(left, top);
+                    Console.Write($"{item.Amount}x " + $"{item.Name}");
+                    top++;
+                }
+                else if (item.Amount > 10 && item.Amount < 20)
+                {
+                    Console.SetCursorPosition(left, top);
+                    Console.Write($"{item.Amount}x " + $"{item.Name}");
+                    top++;
+                }
+                else if (item.Amount > 20 && item.Amount < 30)
+                {
+                    Console.SetCursorPosition(left, top);
+                    Console.Write($"{item.Amount}x " + $"{item.Name}");
+                    top++;
+                }
+                else if (item.Amount > 30 && item.Amount < 40)
+                {
+                    Console.SetCursorPosition(left, top);
+                    Console.Write($"{item.Amount}x " + $"{item.Name}");
+                    top++;
+                }
+                else if (item.Amount > 40)
+                {
+                    Console.SetCursorPosition(left, top);
+                    Console.Write($"{item.Amount}x " + $"{item.Name}");
+                    top++;
+                }
+            }
         }
 
 
@@ -49,7 +102,7 @@ namespace util.RenderHelper
                 (int currL, int currT) = Console.GetCursorPosition();
 
                 // current
-                ConsoleColor color = Console.ForegroundColor;          
+                ConsoleColor color = Console.ForegroundColor;
 
                 Console.SetCursorPosition(StartLeft, StartTop);
 
@@ -81,12 +134,14 @@ namespace util.RenderHelper
                 Console.WriteLine($"[ ID: {weapon.ID} ]");
                 Console.ForegroundColor = color;
 
-                Console.SetCursorPosition(currL, currT); 
+                Console.SetCursorPosition(currL, currT);
             }
         }
 
         public void RenderWeaponContext(Weapon weapon)
         {
+            if (weapon == null) return;
+
             double mainLeft = Console.WindowWidth / 2 / 1.6;
             double mainRight = Console.WindowWidth / 2 * 1.5;
             int mainWidth = (int)(mainRight - mainLeft + 1);
@@ -430,8 +485,8 @@ namespace util.RenderHelper
     string answer1,
     string answer2,
     string answer3,
-    int correctAnswer,
-    bool animated)
+    bool animated,
+    Inventory inv)
         {
             if (dialogue.Length > 420)
                 return "Error: Dialogue length exceeds 420 chars!";
@@ -502,23 +557,29 @@ namespace util.RenderHelper
             Console.Write("Choose: " + string.Join(" | ", options));
 
             string Answer;
+
             while (true)
             {
                 Console.SetCursorPosition((int)leftCorner + 2, answerY + 1);
                 Console.Write("-> ");
                 Answer = Console.ReadLine()?.Trim();
 
+                if (Answer == "inv")
+                {
+                    ToggleInventoryShown(inv);
+                    continue; // redo the loop, do NOT return "inv"
+                }
+
                 if (Answer == "1" || Answer == "2" || Answer == "3")
-                    break;
+                {
+                    return Answer; // valid choice, exit method
+                }
 
                 Console.SetCursorPosition((int)leftCorner + 2, answerY);
                 Console.Write("Choose: " + string.Join(" | ", options));
             }
 
-            if (Answer == correctAnswer.ToString())
-                return "correct";
-            else
-                return Answer;
+            return Answer;
         }
 
         string CapitalizeFirstLetter(string input)

@@ -58,8 +58,14 @@ public class Player(string name)
         helper.RenderHP(this);
     }
 
-    public void UnequipWeapon(Weapon? exeption)
+    /*
+    public void UnequipWeaponWithNullableExeption(Weapon? exeption)
     {
+        if (exeption == null) 
+        { 
+            return;
+        }
+
         foreach (var w in weaponcatalog.AllWeapons)
         {
             if (w.Name != exeption.Name)
@@ -69,9 +75,18 @@ public class Player(string name)
         }
     }
 
+
     public void EquipWeapon(Weapon weapon)
     {
-        UnequipWeapon(weapon);
-        weapon.IsEquipped = true;
+        if (weapon.IsOwned)
+        {
+            UnequipWeaponWithNullableExeption(weapon);
+            weapon.IsEquipped = true;
+        }
+        else
+        {
+            helper.RenderHeaderText("Weapon Is Not Owned", true, false, false, 0, 500, false);
+        }
     }
+    */
 }
