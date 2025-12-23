@@ -9,7 +9,6 @@ using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using game.Player;
 using game.Weapon;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -22,6 +21,7 @@ namespace util.RenderHelper
             List<String> inventoryContentsItem = new List<String>();
             foreach (Item item in inventory.OwnedItems)
             {
+                item.Name.ToString();
                 inventoryContentsItem.Add(item.Name);
                 Console.WriteLine(item.Amount.ToString() + "x " + item.Name);
             }
@@ -32,13 +32,10 @@ namespace util.RenderHelper
                 inventoryContentsWeapon.Add(weapon.Name);
             }
 
-            List<String> inventoryContentsSpells = new List<String>();
-            foreach (var spell in inventory.OwnedSpells)
+            inventoryContentsItem.ForEach(item =>
             {
-                inventoryContentsSpells.Add(spell.Name);
-            }
-
-            inventoryContentsItem.
+                Console.Write(item);
+            });
         }
 
 
@@ -543,7 +540,7 @@ namespace util.RenderHelper
             foreach (char c in text)
             {
                 Console.Write(c);
-                Thread.Sleep(15);
+                Thread.Sleep(65);
             }
         }
 

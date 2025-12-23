@@ -7,8 +7,6 @@ namespace game.Weapon
 {
     public class Weapon
     {
-
-
         public enum Rarity
         {
             COMMON,
@@ -27,8 +25,11 @@ namespace game.Weapon
         public int? Cooldown { get; }
         public int Durability { get; set; }
         public int MaxDurability { get; set; }
+        public bool IsOwned { get; set; }
 
-        public Weapon(Rarity _rarity, string name, string description, int? id, int durability, int damage, int maxDurability) 
+        public bool IsEquipped { get; set; }
+
+        public Weapon(Rarity _rarity, string name, string description, int? id, int durability, int damage, int maxDurability, bool isEquipped, bool isOwned) 
         {
             Description = description;
             Name = name;
@@ -37,6 +38,8 @@ namespace game.Weapon
             Durability = durability;
             MaxDurability = maxDurability;
             rarity = _rarity;
+            IsEquipped = isEquipped;
+            IsOwned = isOwned;
         }
 
         public bool isWeaponContextComplete(Weapon weapon)
@@ -55,11 +58,6 @@ namespace game.Weapon
         public Rarity getRarity(Weapon weapon)
         {
             return weapon.rarity;
-        }
-
-        public int getEquippedWeapon(Inventory inventory)
-        {
-            return inventory.CurrentWeapon;
         }
     }
 }

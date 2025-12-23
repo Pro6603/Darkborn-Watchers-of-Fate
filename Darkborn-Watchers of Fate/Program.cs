@@ -55,6 +55,8 @@ renderHelper.RenderHP(player);
 // items needed to craft an DullKnife
 inventory.AddItem(itemcatalog.ShortStick, 2);
 inventory.AddItem(itemcatalog.IronOre, 4);
+
+inventory.AddW
 //
 
 renderHelper.RenderDialogueTB("saint", "here ya go, take the sword. youll need it.", "[TAKE]", "", "", 1, true);
@@ -72,6 +74,6 @@ player.STAMINA = (int)randomutil.random.NextInt64(16, 24);
 renderHelper.RenderDialogueTB("you", "... this weakend me quite alot, do you have a healing potion?", "", "", "", 1, true);
 renderHelper.RenderDialogueTB("saint", "here ya go mate, hope this helps you:", "Take Potion", "", "", 1, true);
 player.HP = 100;
-
+player.STAMINA = 100;
 
 Console.ReadKey();
