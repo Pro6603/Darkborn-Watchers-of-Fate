@@ -39,7 +39,4 @@ public class Item
     {
         return Icon;
     }
-
-    // item defenition 
-    // USING ITEM DATABASE NOW OKI BYE
 }

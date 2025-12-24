@@ -1,22 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using game.Spell;
 using game.Weapon;
 
 public class Inventory
 {
-    public Weapon EquippedWeapon;
-    public Inventory() { }
+    public Weapon EquippedWeapon { get; private set; }
+
+    private WeaponCatalog weaponcatalog;
 
     public List<Item> OwnedItems { get; } = new List<Item>();
     public List<Weapon> OwnedWeapons { get; } = new List<Weapon>();
     public List<Spell> OwnedSpells { get; } = new List<Spell>();
 
+    public event Action OnInventoryChanged;
+
+    public Inventory()
+    {
+        weaponcatalog = WeaponCatalog.Main;
+    }
+
+    private void NotifyInventoryChanged() => OnInventoryChanged?.Invoke();
+
+    #region Item Management
+
     public void AddItem(Item item, int amount)
     {
-        Item existing = OwnedItems.Find(i => i.ID == item.ID);
+        if (item == null || amount <= 0) return;
 
+        var existing = OwnedItems.Find(i => i.ID == item.ID);
         if (existing != null)
         {
             existing.Amount += amount;
@@ -31,82 +44,117 @@ public class Inventory
                 item.Icon
             ));
         }
+
+        NotifyInventoryChanged();
     }
 
     public void RemoveItem(Item item, int amount)
     {
-        Item existing = OwnedItems.Find(i => i.ID == item.ID);
+        if (item == null || amount <= 0) return;
 
-        if (existing == null)
-            return;
+        var existing = OwnedItems.Find(i => i.ID == item.ID);
+        if (existing == null) return;
 
         existing.Amount -= amount;
-
         if (existing.Amount <= 0)
-        {
             OwnedItems.Remove(existing);
-        }
+
+        NotifyInventoryChanged();
     }
 
-    public void AddWeapon(Weapon weapon, bool setOwned)
-    {
-        Weapon existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
+    #endregion
 
+    #region Weapon Management
+
+    public void AddWeapon(Weapon weapon, bool setOwned = true)
+    {
+        if (weapon == null) return;
+
+        var existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
         if (existing != null)
         {
             existing.IsOwned = setOwned;
+            NotifyInventoryChanged();
+            return;
         }
-        else
-        {
-            OwnedWeapons.Add(new Weapon(
-                weapon.getRarity(weapon),
-                weapon.Name,
-                weapon.Description,
-                weapon.ID,
-                weapon.Durability,
-                weapon.Damage,
-                weapon.MaxDurability,
-                weapon.IsEquipped,
-                setOwned
-            ));
-        }
+
+        OwnedWeapons.Add(new Weapon(
+            weapon.getRarity(),
+            weapon.Name,
+            weapon.Description,
+            weapon.ID,
+            weapon.Durability,
+            weapon.Damage,
+            weapon.MaxDurability,
+            weapon.IsEquipped,
+            setOwned,
+            weaponcatalog
+        ));
+
+        NotifyInventoryChanged();
     }
 
     public bool CanRemoveWeapon(Weapon weapon)
     {
-        Weapon existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
+        if (weapon == null) return false;
 
-        if (existing == null)
-            return false;
-
-        if (existing.IsEquipped)
-            return false;
-
-        return true;
+        var existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
+        return existing != null && !existing.IsEquipped;
     }
-
 
     public void RemoveWeapon(Weapon weapon)
     {
-        Weapon existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
+        if (!CanRemoveWeapon(weapon)) return;
 
-        if (existing == null)
-            return;
-
-        OwnedWeapons.Remove(existing);
+        var existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
+        if (existing != null)
+        {
+            OwnedWeapons.Remove(existing);
+            NotifyInventoryChanged();
+        }
     }
 
     public bool EquipWeapon(Weapon weapon)
     {
-        var existing = OwnedWeapons.Find(w => w.ID == weapon.ID);
-        if (existing == null || !existing.IsOwned)
-            return false;
+        if (weapon == null) return false;
+
+        var existing = OwnedWeapons.Find(w => w.ID == weapon.ID && w.IsOwned);
+        if (existing == null) return false;
 
         foreach (var w in OwnedWeapons)
             w.IsEquipped = false;
 
         existing.IsEquipped = true;
         EquippedWeapon = existing;
+
+        NotifyInventoryChanged();
         return true;
     }
+
+    #endregion
+
+    /*
+    #region Spell Management
+
+    public void AddSpell(Spell spell)
+    {
+        if (spell == null) return;
+
+        if (!OwnedSpells.Any(s => s.ID == spell.ID))
+        {
+            OwnedSpells.Add(spell);
+            NotifyInventoryChanged();
+        }
+    }
+
+    public void RemoveSpell(Spell spell)
+    {
+        if (spell == null) return;
+
+        OwnedSpells.RemoveAll(s => s.ID == spell.ID);
+        NotifyInventoryChanged();
+    }
+
+    #endregion
+    */
 }

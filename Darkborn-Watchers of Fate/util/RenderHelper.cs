@@ -18,6 +18,13 @@ namespace util.RenderHelper
 {
     internal class RenderHelper
     {
+        private WeaponCatalog weaponcatalog;
+
+        public RenderHelper()
+        {
+            weaponcatalog = WeaponCatalog.Main;
+        }
+
         private bool isInventoryShown;
 
         public void ToggleInventoryShown(Inventory inventory)
@@ -36,17 +43,29 @@ namespace util.RenderHelper
                 }
 
                 isInventoryShown = false;
+
+                inventory.OnInventoryChanged -= InventoryChangedHandler;
             }
             else
             {
-                RenderInventory(inventory);
+                inventory.OnInventoryChanged += InventoryChangedHandler;
 
+                RenderInventory(inventory);
             }
         }
 
+        private void InventoryChangedHandler()
+        {
+            if (isInventoryShown)
+                RenderInventory(currentInventory);
+        }
+
+        private Inventory currentInventory;
 
         public void RenderInventory(Inventory inventory)
         {
+            currentInventory = inventory;
+
             isInventoryShown = true;
 
             int top = 1;
@@ -56,40 +75,37 @@ namespace util.RenderHelper
             Console.Write("<-- All Items -->");
             top += 2;
 
-            foreach (var item in inventory.OwnedItems)
+            foreach (var item in inventory.OwnedItems
+                             .Where(i => i.Amount > 0)
+                             .OrderByDescending(i => i.Amount))
             {
-                if (item.Amount > 0 && item.Amount < 10)
-                {
-                    Console.SetCursorPosition(left, top);
-                    Console.Write($"{item.Amount}x " + $"{item.Name}");
-                    top++;
-                }
-                else if (item.Amount > 10 && item.Amount < 20)
-                {
-                    Console.SetCursorPosition(left, top);
-                    Console.Write($"{item.Amount}x " + $"{item.Name}");
-                    top++;
-                }
-                else if (item.Amount > 20 && item.Amount < 30)
-                {
-                    Console.SetCursorPosition(left, top);
-                    Console.Write($"{item.Amount}x " + $"{item.Name}");
-                    top++;
-                }
-                else if (item.Amount > 30 && item.Amount < 40)
-                {
-                    Console.SetCursorPosition(left, top);
-                    Console.Write($"{item.Amount}x " + $"{item.Name}");
-                    top++;
-                }
-                else if (item.Amount > 40)
-                {
-                    Console.SetCursorPosition(left, top);
-                    Console.Write($"{item.Amount}x " + $"{item.Name}");
-                    top++;
-                }
+                Console.SetCursorPosition(left, top);
+                Console.Write($"{item.Amount}x {item.Name}");
+                top++;
             }
+
+            top++;
+            Console.SetCursorPosition(left, top);
+            Console.Write("<-- All Weapons -->");
+            top += 2;
+
+            foreach (var weapon in inventory.OwnedWeapons
+                                .Where(w => w.Damage > 0)
+                                .OrderByDescending(w => w.Damage))
+            {
+                Console.SetCursorPosition(left, top);
+                Console.Write($"{weapon.Name} - Damage: {weapon.Damage}, Durability: {weapon.Durability}");
+                top++;
+            }
+
+            top++;
+            Console.SetCursorPosition(left, top);
+            Console.Write("<-- All Spells -->");
+            top += 2;
+
+            // fuck spells
         }
+
 
 
         /// <summary>
@@ -97,7 +113,7 @@ namespace util.RenderHelper
         /// </summary>
         public void RenderWeaponContextCustomPosition(Weapon weapon, int StartLeft, int StartTop)
         {
-            if (weapon.isWeaponContextComplete(weapon))
+            if (weapon.isWeaponContextComplete())
             {
                 (int currL, int currT) = Console.GetCursorPosition();
 
@@ -106,7 +122,7 @@ namespace util.RenderHelper
 
                 Console.SetCursorPosition(StartLeft, StartTop);
 
-                Console.ForegroundColor = weapon.getRarity(weapon) switch
+                Console.ForegroundColor = weapon.getRarity() switch
                 {
                     Weapon.Rarity.COMMON => ConsoleColor.DarkGray,
                     Weapon.Rarity.UNCOMMON => ConsoleColor.Gray,
@@ -212,7 +228,7 @@ namespace util.RenderHelper
 
         private ConsoleColor GetRarityColor(Weapon weapon)
         {
-            return weapon.getRarity(weapon) switch
+            return weapon.getRarity() switch
             {
                 Weapon.Rarity.COMMON => ConsoleColor.DarkGray,
                 Weapon.Rarity.UNCOMMON => ConsoleColor.Gray,
@@ -570,6 +586,31 @@ namespace util.RenderHelper
                     continue; // redo the loop, do NOT return "inv"
                 }
 
+                if (Answer.StartsWith("weapon equip ", StringComparison.OrdinalIgnoreCase))
+                {
+                    string weaponName = Answer[13..].Trim();
+
+                    if (string.IsNullOrEmpty(weaponName))
+                    {
+                        RenderHeaderText("Please Specify a weapon name.", true, false, false, 0, 1000, false);
+                        continue;
+                    }
+
+                    //Console.WriteLine($"Weapons in catalog: {weaponcatalog.AllWeapons.Count}");
+                    RenderHeaderText($"Equipped {weaponName}", false, false, true, 0, 300, false);
+
+                    Weapon? weapon = weaponcatalog?.FindWeapon(weaponName);
+
+                    if (weapon != null)
+                    {
+                        inv.EquipWeapon(weapon);
+                    }
+                    else
+                    {
+                        RenderHeaderText("Weapon not found.", true, false, false, 0, 1000, false);
+                    }
+                }
+
                 if (Answer == "1" || Answer == "2" || Answer == "3")
                 {
                     return Answer; // valid choice, exit method
@@ -579,7 +620,7 @@ namespace util.RenderHelper
                 Console.Write("Choose: " + string.Join(" | ", options));
             }
 
-            return Answer;
+            // return Answer;
         }
 
         string CapitalizeFirstLetter(string input)

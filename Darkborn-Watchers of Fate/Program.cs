@@ -18,10 +18,9 @@ Console.Title = app.setTitle();
 Console.SetWindowSize(200, 50);
 
 ItemCatalog itemcatalog = new ItemCatalog();
-WeaponCatalog weaponcatalog = new WeaponCatalog();
-SpellCatalog spellcatalog = new SpellCatalog();
-
+WeaponCatalog weaponcatalog = WeaponCatalog.Main;
 RenderHelper renderHelper = new RenderHelper();
+
 Inventory inventory = new Inventory();
 Random globalRandom = new Random();
 
@@ -60,13 +59,16 @@ inventory.AddItem(itemcatalog.Glue, 6);
 inventory.AddItem(itemcatalog.ShortStick, 56);
 //
 
+inventory.AddWeapon(weaponcatalog.DullKnife, true);
+inventory.AddWeapon(weaponcatalog.BoneClub, true);
+
 renderHelper.RenderInventory(inventory);
 
 string takeWeapon = renderHelper.RenderDialogueTB("saint", "here ya go, take the sword. youll need it.", "[TAKE]", "", "", true, inventory);
 if (takeWeapon == "1")
 {
-    inventory.AddWeapon(weaponcatalog.DullKnife, true);
-    inventory.EquipWeapon(weaponcatalog.DullKnife);
+    inventory.AddWeapon(weaponcatalog.IronSword, true);
+    inventory.EquipWeapon(weaponcatalog.IronSword);
     renderHelper.RenderWeaponContext(inventory.EquippedWeapon);
 }
 

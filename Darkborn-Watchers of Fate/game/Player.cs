@@ -1,35 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using game.Weapon;
 using util.RenderHelper;
-
 
 internal class randomutil
 {
     public static Random random = new Random();
 }
 
-public class Player(string name)
+public class Player
 {
-    private RenderHelper helper = new RenderHelper();
-    private WeaponCatalog weaponcatalog = new WeaponCatalog();
+    private static WeaponCatalog weaponcatalog;
+
+    private RenderHelper helper;
+
+    public string Name { get; }
 
     private int _hp = 100;
-    public int _stamina = 25;
+    private int _stamina = 25;
 
-    public int STAMINA
-    {
-        get => _stamina;
-        set
-        {
-            if (_stamina != value)
-            {
-                _stamina = value;
-                OnStaminaChanged();
-            }
-        }
-    }
+    public int AGE { get; set; }
 
     public int HP
     {
@@ -44,49 +33,27 @@ public class Player(string name)
         }
     }
 
-    public string Name { get; } = name;
-
-    public int AGE { get; set; } = randomutil.random.Next(46);
-
-    private void OnStaminaChanged()
+    public int STAMINA
     {
-        helper.RenderStamina(this);
-    }
-
-    private void OnHPChanged()
-    {
-        helper.RenderHP(this);
-    }
-
-    /*
-    public void UnequipWeaponWithNullableExeption(Weapon? exeption)
-    {
-        if (exeption == null) 
-        { 
-            return;
-        }
-
-        foreach (var w in weaponcatalog.AllWeapons)
+        get => _stamina;
+        set
         {
-            if (w.Name != exeption.Name)
+            if (_stamina != value)
             {
-                w.IsEquipped = false;
+                _stamina = value;
+                OnStaminaChanged();
             }
         }
     }
 
-
-    public void EquipWeapon(Weapon weapon)
+    public Player(string name)
     {
-        if (weapon.IsOwned)
-        {
-            UnequipWeaponWithNullableExeption(weapon);
-            weapon.IsEquipped = true;
-        }
-        else
-        {
-            helper.RenderHeaderText("Weapon Is Not Owned", true, false, false, 0, 500, false);
-        }
+        Name = name;
+        weaponcatalog = WeaponCatalog.Main;
+        helper = new RenderHelper();
+        AGE = randomutil.random.Next(46);
     }
-    */
+
+    private void OnStaminaChanged() => helper.RenderStamina(this);
+    private void OnHPChanged() => helper.RenderHP(this);
 }

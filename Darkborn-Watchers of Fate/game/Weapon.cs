@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 using util.RenderHelper;
 
 namespace game.Weapon
 {
     public class Weapon
     {
-        private readonly RenderHelper renderHelper = new RenderHelper();
+        private static WeaponCatalog weaponCatalog;
+
+        private RenderHelper renderHelper;
+
         public enum Rarity
         {
             COMMON,
@@ -35,17 +35,13 @@ namespace game.Weapon
             get => _isEquipped;
             set
             {
-                // only react when switching false → true
                 if (!_isEquipped && value)
-                {
                     renderHelper.RenderWeaponContext(this);
-                }
-
                 _isEquipped = value;
             }
         }
 
-        public Weapon(Rarity _rarity, string name, string description, int? id, int durability, int damage, int maxDurability, bool isEquipped, bool isOwned) 
+        public Weapon(Rarity _rarity, string name, string description, int? id, int durability, int damage, int maxDurability, bool isEquipped, bool isOwned, WeaponCatalog catalog)
         {
             Description = description;
             Name = name;
@@ -56,24 +52,19 @@ namespace game.Weapon
             rarity = _rarity;
             IsEquipped = isEquipped;
             IsOwned = isOwned;
+
+            weaponCatalog = catalog;
+            renderHelper = new RenderHelper();
         }
 
-        public bool isWeaponContextComplete(Weapon weapon)
+        public bool isWeaponContextComplete()
         {
-            // cooldown not required
-            if (rarity != null && Name != null && Description != null && ID != null || ID != 0 || ID != 00 && Damage > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return !string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Description) && ID.HasValue && ID != 0 && Damage > 0;
         }
 
-        public Rarity getRarity(Weapon weapon)
+        public Rarity getRarity()
         {
-            return weapon.rarity;
+            return rarity;
         }
     }
 }
